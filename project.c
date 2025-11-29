@@ -224,3 +224,24 @@ void displayStudentCSV(Student s) {
     }
     printf("\n");
 }
+
+
+// ---------------- RESULT CALCULATION ----------------
+void calculateResults(Student *s) {
+    s->total = 0;
+    for (int i = 0; i < SUBJECTS; i++)
+        s->total += s->marks[i];
+
+    s->average = s->total / (float) SUBJECTS;
+    s->percentage = (s->total / (float)(SUBJECTS * MAX_MARK)) * 100.0;
+    s->grade = assignGrade(s->percentage);
+}
+
+char assignGrade(float p) {
+    if (p >= 90.0) return 'A';
+    if (p >= 80.0) return 'B';
+    if (p >= 70.0) return 'C';
+    if (p >= 60.0) return 'D';
+    if (p >= 50.0) return 'E';
+    return 'F';
+}
