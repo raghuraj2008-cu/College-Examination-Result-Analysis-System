@@ -245,3 +245,158 @@ char assignGrade(float p) {
     if (p >= 50.0) return 'E';
     return 'F';
 }
+
+// ---------------- REPORTING & ANALYSIS ----------------
+
+void classTopper(Student *s, int n) {
+    if (n == 0) { printf("No records available to determine the topper.\n"); return; }
+
+    int top_total = -1;
+    
+    for (int i = 0; i < n; i++) {
+        if (s[i].total > top_total) {
+            top_total = s[i].total;
+        }
+    }
+    
+    printf("\n*** CLASS TOPPER(S) (Highest Total: %d / %d) ***\n", top_total, SUBJECTS * MAX_MARK);
+    int topper_count = 0;
+    for (int i = 0; i < n; i++) {
+        if (s[i].total == top_total) {
+            printf(">> %s (Roll %d) - %.2f%%, Grade %c\n", 
+                   s[i].name, s[i].roll_no, s[i].percentage, s[i].grade);
+            topper_count++;
+        }
+    }
+    printf("Total Toppers: %d\n", topper_count);
+    printSeparator('-', 50);
+}
+
+void subjectWiseHighest(Student *s, int n) {
+    if (n == 0) { printf("No records available for subject analysis.\n"); return; }
+    
+    printf("\n--- SUBJECT-WISE HIGHEST MARKS ---\n");
+
+    for (int sub = 0; sub < SUBJECTS; sub++) {
+        int max_mark = -1;
+        
+        for (int i = 0; i < n; i++) {
+            if (s[i].marks[sub] > max_mark) {
+                max_mark = s[i].marks[sub];
+            }
+        }
+        
+        printf("%-10s Highest (%d/%d): ", SUBJECT_NAMES[sub], max_mark, MAX_MARK);
+        int topper_count = 0;
+        for (int i = 0; i < n; i++) {
+            if (s[i].marks[sub] == max_mark) {
+                if (topper_count > 0) printf(", ");
+                printf("%s (Roll %d)", s[i].name, s[i].roll_no);
+                topper_count++;
+            }
+        }
+        printf("\n");
+    }
+    printSeparator('-', 50);
+}
+
+void subjectAverages(Student *s, int n) {
+    if (n == 0) { printf("No records available to calculate averages.\n"); return; }
+    
+    printf("\n--- Subject-wise Class Averages ---\n");
+    printSeparator('-', 50);
+
+    for (int sub = 0; sub < SUBJECTS; sub++) {
+        float sum = 0;
+        for (int i = 0; i < n; i++)
+            sum += s[i].marks[sub];
+
+        printf("%-10s Average: *%.2f*\n", SUBJECT_NAMES[sub], sum / n);
+    }
+    printSeparator('-', 50);
+}
+
+void failAnalysis(Student *s, int n) {
+    if (n == 0) { printf("No records available for failure analysis.\n"); return; }
+    
+    printf("\n--- FAILURE ANALYSIS (Pass Mark: %d) ---\n", PASS_MARK);
+    printSeparator('-', 50);
+    
+    int total_failures = 0;
+
+    for (int i = 0; i < n; i++) {
+        int failed_subjects = 0;
+        printf("Roll %d, %s: ", s[i].roll_no, s[i].name);
+        
+        for (int sub = 0; sub < SUBJECTS; sub++) {
+            if (s[i].marks[sub] < PASS_MARK) {
+                if (failed_subjects > 0) printf(", ");
+                printf("%s (%d)", SUBJECT_NAMES[sub], s[i].marks[sub]);
+                failed_subjects++;
+            }
+        }
+        
+        if (failed_subjects > 0) {
+            printf(" -> FAILED in %d subjects.\n", failed_subjects);
+            total_failures++;
+        } else {
+            printf(" PASSED all subjects.\n");
+        }
+    }
+    printSeparator('-', 50);
+    printf("Total Students failed in at least one subject: %d / %d\n", total_failures, n);
+}
+
+void gradeDistribution(Student *s, int n) {
+    if (n == 0) { printf("No records available for grade distribution.\n"); return; }
+    
+    int grade_counts[6] = {0}; // A, B, C, D, E, F
+
+    for (int i = 0; i < n; i++) {
+        switch (s[i].grade) {
+            case 'A': grade_counts[0]++; break;
+            case 'B': grade_counts[1]++; break;
+            case 'C': grade_counts[2]++; break;
+            case 'D': grade_counts[3]++; break;
+            case 'E': grade_counts[4]++; break;
+            case 'F': grade_counts[5]++; break;
+        }
+    }
+    
+    printf("\n--- CLASS GRADE DISTRIBUTION ---\n");
+    printSeparator('*', 50);
+    printf("Grade | Count | Percentage of Class\n");
+    printSeparator('-', 50);
+
+    char grades[] = {'A', 'B', 'C', 'D', 'E', 'F'};
+    for (int i = 0; i < 6; i++) {
+        float percent = (n > 0) ? (grade_counts[i] * 100.0 / n) : 0.0;
+        printf("  %c   | %5d | %9.2f%%\n", grades[i], grade_counts[i], percent);
+    }
+    printSeparator('*', 50);
+    printf("Total Students: %d\n", n);
+}
+
+void generateMeritList(Student *s, int n) {
+    if (n == 0) { printf("No records available to generate a merit list.\n"); return; }
+    
+    Student *merit_list = (Student *)malloc(n * sizeof(Student));
+    if (!merit_list) {
+        printf("Error: Memory allocation failed for merit list.\n");
+        return;
+    }
+    memcpy(merit_list, s, n * sizeof(Student));
+    
+    qsort(merit_list, n, sizeof(Student), compareStudents);
+
+    printf("\n============== CLASS MERIT LIST (Sorted by Total) ==============\n");
+    printf("Rank\tRoll\t\tName\t\t\tTotal\tPercent\tGrade\n");
+    printSeparator('-', 64);
+    for (int i = 0; i < n; i++) {
+        printf("%-7d %-15d %-20s %-7d %-7.2f %-5c\n",
+               i + 1, merit_list[i].roll_no, merit_list[i].name, merit_list[i].total, merit_list[i].percentage, merit_list[i].grade);
+    }
+    printSeparator('-', 64);
+               
+    free(merit_list);
+}
