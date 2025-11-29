@@ -19,3 +19,31 @@ typedef struct {
     float percentage;
     char grade;
  } Student;
+
+
+// ---------------- FUNCTION PROTOTYPES & UTILITIES ----------------
+void printSeparator(char c, int len);
+int getIntInput();
+int rollNumberExists(Student *s, int n, int roll); 
+int compareStudents(const void *a, const void *b); 
+
+void inputStudent(Student *s);
+void displayStudentDetailed(Student s); 
+void displayStudentCSV(Student s);      
+
+void calculateResults(Student *s);
+char assignGrade(float percentage);
+void classTopper(Student *s, int n);
+void subjectWiseHighest(Student *s, int n);
+void subjectAverages(Student *s, int n);
+void failAnalysis(Student *s, int n); 
+void gradeDistribution(Student *s, int n); 
+void generateMeritList(Student *s, int n);
+
+void saveToText(Student *s, int n);
+void saveToCSV(Student *s, int n);
+void loadFromCSV(Student **s, int *n);
+void searchByRoll(Student *s, int n);
+void searchByName(Student *s, int n);
+void modifyStudent(Student *s, int n);
+void deleteStudent(Student **s, int *n);
