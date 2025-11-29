@@ -127,3 +127,36 @@ int main() {
     free(students);
     return 0;
 }
+
+
+// ---------------- UTILITY FUNCTIONS ----------------
+void printSeparator(char c, int len) {
+    for (int i = 0; i < len; i++) {
+        printf("%c", c);
+    }
+    printf("\n");
+}
+
+int getIntInput() {
+    int input;
+    if (scanf("%d", &input) != 1) {
+        while (getchar() != '\n');
+        return -1; 
+    }
+    return input;
+}
+
+int rollNumberExists(Student *s, int n, int roll) {
+    for (int i = 0; i < n; i++) {
+        if (s[i].roll_no == roll) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int compareStudents(const void *a, const void *b) {
+    Student *s1 = (Student *)a;
+    Student *s2 = (Student *)b;
+    return s2->total - s1->total;
+}
