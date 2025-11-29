@@ -400,3 +400,194 @@ void generateMeritList(Student *s, int n) {
                
     free(merit_list);
 }
+
+
+// ---------------- FILE I/O AND MODIFICATIONS ----------------
+
+void saveToText(Student *s, int n) {
+    if (n == 0) { printf("No data to save.\n"); return; }
+    FILE *fp = fopen("result_report.txt", "w");
+    if (!fp) { printf("Error: Could not open result_report.txt for writing.\n"); return; }
+
+    fprintf(fp, "====================== STUDENT REPORT (%d RECORDS) ======================\n", n);
+    fprintf(fp, "Roll\tName\t\tTotal\tPercent\tGrade\t");
+    for(int i = 0; i < SUBJECTS; i++) {
+        fprintf(fp, "%s\t", SUBJECT_NAMES[i]);
+    }
+    fprintf(fp, "\n");
+    
+    for (int i = 0; i < n; i++) {
+        fprintf(fp, "%d\t%s\t\t%d\t%.2f\t%c\t",
+                s[i].roll_no, s[i].name, s[i].total, s[i].percentage, s[i].grade);
+        for(int j = 0; j < SUBJECTS; j++) {
+            fprintf(fp, "%d\t", s[i].marks[j]);
+        }
+        fprintf(fp, "\n");
+    }
+
+    fclose(fp);
+    printf("\nSuccessfully saved %d records to result_report.txt\n", n);
+}
+
+void saveToCSV(Student *s, int n) {
+    if (n == 0) { printf("No data to save.\n"); return; }
+    FILE *fp = fopen("students.csv", "w");
+    if (!fp) { printf("Error: Could not open students.csv for writing.\n"); return; }
+
+    // Header line
+    fprintf(fp, "Roll,Name,Total,Percentage,Grade");
+    for(int i = 0; i < SUBJECTS; i++) {
+        fprintf(fp, ",%s", SUBJECT_NAMES[i]);
+    }
+    fprintf(fp, "\n");
+    
+    for (int i = 0; i < n; i++) {
+        // Use the same single-line output format as displayStudentCSV
+        fprintf(fp, "%d,%s,%d,%.2f,%c",
+                s[i].roll_no, s[i].name, s[i].total, s[i].percentage, s[i].grade);
+        for(int j = 0; j < SUBJECTS; j++) {
+            fprintf(fp, ",%d", s[i].marks[j]);
+        }
+        fprintf(fp, "\n");
+    }
+
+    fclose(fp);
+    printf("\nSuccessfully saved %d records to students.csv (Backup File)\n", n);
+}
+
+void loadFromCSV(Student **s, int *n) {
+    FILE *fp = fopen("students.csv", "r");
+    if (!fp) return;
+
+    char line[200];
+    if (!fgets(line, sizeof(line), fp)) {
+        fclose(fp);
+        return;
+    }
+
+    while (fgets(line, sizeof(line), fp)) {
+        Student *new_s = realloc(*s, (*n + 1) * sizeof(Student));
+        if (!new_s) {
+            printf("Error: Memory reallocation failed during file load.\n");
+            free(*s);
+            *s = NULL;
+            *n = 0;
+            fclose(fp);
+            return;
+        }
+        *s = new_s;
+
+        Student *st = &(*s)[*n];
+        
+        int result = sscanf(line, "%d,%49[^,],%d,%f,%c,%d,%d,%d,%d,%d",
+            &st->roll_no, st->name, &st->total, &st->percentage, &st->grade,
+            &st->marks[0], &st->marks[1], &st->marks[2], &st->marks[3], &st->marks[4]);
+
+        if (result == 5 + SUBJECTS) { 
+            calculateResults(st); 
+            (*n)++;
+        } else {
+             printf("Warning: Skipped malformed line in CSV.\n");
+        }
+    }
+
+    fclose(fp);
+}
+
+void searchByRoll(Student *s, int n) {
+    if (n == 0) { printf("No records to search.\n"); return; }
+    int roll;
+    printf("\nEnter roll number to search: ");
+    roll = getIntInput();
+
+    for (int i = 0; i < n; i++)
+        if (s[i].roll_no == roll) {
+            printf("\n--- Found Record ---\n");
+            displayStudentDetailed(s[i]);
+            return;
+        }
+
+    printf("No record found for Roll Number %d.\n", roll);
+}
+
+void searchByName(Student *s, int n) {
+    if (n == 0) { printf("No records to search.\n"); return; }
+    char name[50];
+    printf("\nEnter name to search: ");
+    scanf(" %[^\n]", name);
+    
+    printf("\n--- Matching Records ---\n");
+    int found = 0;
+    for (int i = 0; i < n; i++)
+        if (strcasecmp(s[i].name, name) == 0) { 
+            displayStudentDetailed(s[i]);
+            found = 1;
+        }
+
+    if (!found) {
+        printf("No record found for Name: %s.\n", name);
+    }
+}
+
+void modifyStudent(Student *s, int n) {
+    if (n == 0) { printf("No records to modify.\n"); return; }
+    int roll;
+    printf("\nEnter roll number to modify: ");
+    roll = getIntInput();
+
+    for (int i = 0; i < n; i++) {
+        if (s[i].roll_no == roll) {
+            printf("\nEditing record for Roll %d (%s):\n", s[i].roll_no, s[i].name);
+            
+            int old_roll = s[i].roll_no; 
+            
+            printf("Keeping Roll Number: %d\n", old_roll);
+            s[i].roll_no = old_roll; 
+
+            printf("Enter NEW Name: ");
+            scanf(" %[^\n]", s[i].name);
+
+            printf("Enter NEW %d Subject Marks (0-%d):\n", SUBJECTS, MAX_MARK);
+            for (int k = 0; k < SUBJECTS; k++) {
+                do {
+                    printf("%s (%d): ", SUBJECT_NAMES[k], k + 1);
+                    s[i].marks[k] = getIntInput();
+                    if (s[i].marks[k] < 0 || s[i].marks[k] > MAX_MARK) {
+                        printf("Error: Marks must be between 0 and %d.\n", MAX_MARK);
+                    }
+                } while (s[i].marks[k] < 0 || s[i].marks[k] > MAX_MARK);
+            }
+
+            calculateResults(&s[i]);
+            printf("\nRecord updated successfully!\n");
+            displayStudentDetailed(s[i]);
+            return;
+        }
+    }
+
+    printf("Record not found.\n");
+}
+
+void deleteStudent(Student **s, int *n) {
+    if (*n == 0) { printf("No records to delete.\n"); return; }
+    int roll;
+    printf("\nEnter roll number to delete: ");
+    roll = getIntInput();
+
+    for (int i = 0; i < *n; i++) {
+        if ((*s)[i].roll_no == roll) {
+
+            for (int j = i; j < *n - 1; j++)
+                (*s)[j] = (*s)[j + 1];
+
+            (*n)--;
+            
+            *s = realloc(*s, (*n) * sizeof(Student));
+
+            printf("\nRecord for Roll %d deleted successfully!\n", roll);
+            return;
+        }
+    }
+
+    printf("Record not found.\n");
+}
