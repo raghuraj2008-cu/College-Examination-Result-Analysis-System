@@ -160,3 +160,67 @@ int compareStudents(const void *a, const void *b) {
     Student *s2 = (Student *)b;
     return s2->total - s1->total;
 }
+// ---------------- INPUT & DISPLAY ----------------
+void inputStudent(Student *s) {
+    int roll;
+    
+    printf("\n--- Adding New Student ---\n");
+    
+    do {
+        printf("Enter Roll Number: ");
+        roll = getIntInput();
+        if (rollNumberExists(s - (s - &s[0]), (s - &s[0]), roll)) {
+            printf("Error: Roll number %d already exists. Please enter a unique roll number.\n", roll);
+        } else if (roll <= 0) {
+             printf("Error: Roll number must be a positive integer.\n");
+        }
+    } while (rollNumberExists(s - (s - &s[0]), (s - &s[0]), roll) || roll <= 0);
+    s->roll_no = roll;
+
+    printf("Enter Name: ");
+    scanf(" %[^\n]", s->name);
+
+    printf("Enter %d Subject Marks (0-%d):\n", SUBJECTS, MAX_MARK);
+    for (int i = 0; i < SUBJECTS; i++) {
+        do {
+            printf("%s (%d): ", SUBJECT_NAMES[i], i + 1);
+            s->marks[i] = getIntInput();
+            if (s->marks[i] < 0 || s->marks[i] > MAX_MARK) {
+                printf("Error: Marks must be between 0 and %d.\n", MAX_MARK);
+            }
+        } while (s->marks[i] < 0 || s->marks[i] > MAX_MARK);
+    }
+}
+
+// Detailed output (used by search/modify)
+void displayStudentDetailed(Student s) {
+    printSeparator('-', 44);
+    printf("Roll No - %d\n", s.roll_no);
+    printf("Name - %s\n", s.name);
+    printSeparator('-', 44);
+    
+    printf("| MARKS SUMMARY:\n");
+    for(int i = 0; i < SUBJECTS; i++) {
+        printf("|  - %-10s: %3d\n", SUBJECT_NAMES[i], s.marks[i]);
+    }
+    
+    printf("|------------------------------------\n");
+    printf("| Total Score   : %d / %d\n", s.total, SUBJECTS * MAX_MARK);
+    printf("| Average       : %.2f\n", s.average);
+    printf("| Percentage : %.2f%%\n", s.percentage);
+    printf("| Grade : %c\n", s.grade);
+    printSeparator('-', 44);
+}
+
+// NEW FUNCTION: Single-line CSV output (used by case 2)
+void displayStudentCSV(Student s) {
+    // Print main data fields
+    printf("%d,%s,%d,%.2f,%c",
+           s.roll_no, s.name, s.total, s.percentage, s.grade);
+    
+    // Print subject marks
+    for (int i = 0; i < SUBJECTS; i++) {
+        printf(",%d", s.marks[i]);
+    }
+    printf("\n");
+}
