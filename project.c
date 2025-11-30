@@ -255,7 +255,8 @@ char assignGrade(float p) {
     if (p >= 50.0) return 'E';
     return 'F';
 }
-
+// classTopper(): sabhi students ke total marks compare karke highest total nikalta hai,
+// phir jitne students ka total utna hi hai unko topper(s) ke roop me print karta hai.
 // ---------------- REPORTING & ANALYSIS ----------------
 
 void classTopper(Student *s, int n) {
