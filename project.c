@@ -346,7 +346,8 @@ void failAnalysis(Student *s, int n) {
                 failed_subjects++;
             }
         }
-        
+        // gradeDistribution(): saare students ke grades count karta hai (A, B, C, D, E, F)
+// aur har grade ka count + percentage of class print karta hai.
         if (failed_subjects > 0) {
             printf(" -> FAILED in %d subjects.\n", failed_subjects);
             total_failures++;
