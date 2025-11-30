@@ -209,7 +209,8 @@ void displayStudentDetailed(Student s) {
     for(int i = 0; i < SUBJECTS; i++) {
         printf("|  - %-10s: %3d\n", SUBJECT_NAMES[i], s.marks[i]);
     }
-    
+    // displayStudentCSV(): ek hi line me student ka data CSV (comma separated) format me
+// print karta hai. Ye option 2 (Display All Students - CSV) ke liye use hota hai.
     printf("|------------------------------------\n");
     printf("| Total Score   : %d / %d\n", s.total, SUBJECTS * MAX_MARK);
     printf("| Average       : %.2f\n", s.average);
