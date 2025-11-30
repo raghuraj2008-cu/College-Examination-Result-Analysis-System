@@ -160,6 +160,8 @@ int compareStudents(const void *a, const void *b) {
     Student *s2 = (Student *)b;
     return s2->total - s1->total;
 }
+// compareStudents(): qsort() ke liye comparison function. Dono students ka total
+// compare karke descending order (highest total first) return karta hai.
 // ---------------- INPUT & DISPLAY ----------------
 void inputStudent(Student *s) {
     int roll;
