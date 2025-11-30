@@ -1,4 +1,5 @@
-#include <stdio.h>
+// Standard C library headers: input/output (stdio), dynamic memory (stdlib),
+// string handling (string.h) aur character functions (ctype.h) use karne ke liye.#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
