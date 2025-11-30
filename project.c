@@ -145,7 +145,8 @@ int getIntInput() {
     }
     return input;
 }
-
+// getIntInput(): integer input safely lene ke liye. Agar scanf fail ho jaye
+// toh input buffer clear karke -1 return karta hai, taaki validation ki ja sake.
 int rollNumberExists(Student *s, int n, int roll) {
     for (int i = 0; i < n; i++) {
         if (s[i].roll_no == roll) {
