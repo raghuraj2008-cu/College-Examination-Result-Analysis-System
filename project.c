@@ -211,7 +211,7 @@ void displayStudentDetailed(Student s) {
     printf("| Grade : %c\n", s.grade);
     printSeparator('-', 44);
 }
-
+// print karta hai. Ye option 2 (Display All Students - CSV) ke liye use hota hai.
 // NEW FUNCTION: Single-line CSV output (used by case 2)
 void displayStudentCSV(Student s) {
     // Print main data fields
