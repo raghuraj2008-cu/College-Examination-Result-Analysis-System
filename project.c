@@ -234,6 +234,9 @@ void displayStudentCSV(Student s) {
 
 
 // ---------------- RESULT CALCULATION ----------------
+// calculateResults() + assignGrade(): total marks, average marks, percentage calculate
+// karke, percentage ke basis pe grade assign karte hain (A–F grading scheme).
+
 void calculateResults(Student *s) {
     s->total = 0;
     for (int i = 0; i < SUBJECTS; i++)
