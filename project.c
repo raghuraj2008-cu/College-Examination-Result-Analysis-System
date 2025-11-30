@@ -4,6 +4,8 @@
 #include <ctype.h>
 
 // You can easily rename your subjects here
+// Project-level constants: SUBJECTS = 5, subject names array, PASS_MARK = 40,
+// MAX_MARK = 100. Inko change karke subjects/criteria easily modify kiye ja sakte hain.
 #define SUBJECTS 5
 const char *SUBJECT_NAMES[SUBJECTS] = {"Maths", "Physics", "Chemistry", "Biology", "English"};
 #define PASS_MARK 40 
